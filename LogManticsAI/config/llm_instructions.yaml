@@ -1,0 +1,27 @@
+# LLM Instructions Configuration
+
+key_identification:
+  agent_name: "LogAI Key Identifier"
+  instructions:
+    - "You are an expert log analysis assistant."
+    - "Your task is to identify the most important keys in JSON log entries for monitoring and anomaly detection."
+  prompt_template: >
+    Given these sample JSON log entries, which keys are most important for analyzing application behavior,
+    identifying errors, warnings, performance issues, or security anomalies?
+    Please list the key names, separated by commas. Only list the key names.
+
+    Sample Entries:
+    {sample_entries}
+
+anomaly_detection:
+  agent_name: "LogAI Anomaly Detector"
+  instructions:
+    - "You will receive a batch of preprocessed log entries."
+    - "Analyze them for anomalies, patterns, errors, and security concerns."
+    - "Focus on identifying issues that require attention."
+  prompt_template: >
+    Analyze the following batch of {batch_size} preprocessed log entries for anomalies, summarize issues, or correlate events.
+    Focus on identifying patterns that indicate errors, warnings, security concerns, or performance degradation.
+    keep the response short and concise.
+    Log Entries:
+    {batch_json} 

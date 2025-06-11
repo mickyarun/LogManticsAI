@@ -1,0 +1,24 @@
+# Python Standard Library dependencies are not listed here
+
+# Core Libraries
+click>=8.1.7  # For creating command-line interfaces
+python-dotenv>=1.0.0  # For managing environment variables (like API keys)
+configparser>=6.0.0  # For handling .ini configuration files
+
+# LLM Libraries
+agno>=1.5.0  # For LLM-powered agents and interactions
+openai>=1.10.0  # For OpenAI API
+
+# For security (keyring)
+keyring>=24.2.0
+
+# For log file processing
+watchdog>=3.0.0  # For monitoring file changes
+
+# For integration
+slack-sdk>=3.25.0  # For Slack notifications
+
+# For testing
+pytest>=7.4.3
+
+# Add other dependencies as needed 
