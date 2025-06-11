@@ -122,3 +122,5 @@ secrets.py
 # local run files
 results/ 
 logs/
+docs/
+debian/

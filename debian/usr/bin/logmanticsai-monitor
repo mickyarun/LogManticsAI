@@ -1,2 +1,0 @@
-#!/bin/bash
-PYTHONPATH=/usr/lib/logmanticsai python3 -m LogManticsAI.main tail_and_analyze_command "$@"
