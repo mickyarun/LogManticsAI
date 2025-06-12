@@ -51,10 +51,17 @@ Non-interactive setup options:
 
 ```bash
 # Single log file
-LogManticsAI setup --model gpt-4 --api-key YOUR_API_KEY --log-paths /path/to/app.log --non-interactive
+LogManticsAI setup --model gpt-4 --provider OPENAI --api-key YOUR_API_KEY --log-paths /path/to/app.log --non-interactive
 
-# Multiple log files
-LogManticsAI setup --model gpt-4 --api-key YOUR_API_KEY --log-paths /path/to/app.log /path/to/api.log --non-interactive
+# Multiple log files (space-separated)
+LogManticsAI setup --model gpt-4 --api-key YOUR_API_KEY --log-paths "/path/to/app.log /path/to/api.log" --non-interactive
+
+# With wildcard pattern support
+LogManticsAI setup --model claude-3-sonnet-20240229 --provider ANTHROPIC --api-key YOUR_API_KEY --log-paths "/var/log/*.json" --non-interactive
+
+# With custom critical levels and status codes
+LogManticsAI setup --model gpt-4 --api-key YOUR_API_KEY --log-paths /path/to/app.log \
+  --critical-levels ERROR CRITICAL FATAL --normal-status-codes 200 201 204 --non-interactive
 ```
 
 ### 2. Monitor Logs
