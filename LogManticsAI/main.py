@@ -216,8 +216,15 @@ def tail_and_analyze_command(config_file, debug):
 @click.option('--slack-disable', is_flag=True, help='Disable Slack notifications')
 @click.option('--slack-channel', help='Update Slack channel')
 @click.option('--slack-token', help='Update Slack token')
+@click.option('--batch-size', type=int, help='Set the number of logs to analyze in each batch')
+@click.option('--analysis-interval', type=int, help='Set analysis interval in seconds')
+@click.option('--error-rate-threshold', type=float, help='Set maximum error rate per minute before alerting')
+@click.option('--response-time-threshold', type=int, help='Set response time threshold in milliseconds')
+@click.option('--process-existing-logs', type=bool, help='Enable/disable processing of existing logs on startup')
 def config_command(show, add_log_file, remove_log_file, list_log_files, reset,
-                  slack_enable, slack_disable, slack_channel, slack_token):
+                  slack_enable, slack_disable, slack_channel, slack_token,
+                  batch_size, analysis_interval, error_rate_threshold,
+                  response_time_threshold, process_existing_logs):
     """Manage LogManticsAI configuration"""
     try:
         # Import necessary modules
@@ -298,6 +305,39 @@ def config_command(show, add_log_file, remove_log_file, list_log_files, reset,
             if slack_token:
                 config['slack_token'] = slack_token
                 click.echo("Slack token updated.")
+            
+            save_yaml_config('config', config)
+            return
+            
+        # Handle anomaly detection configuration
+        if any([batch_size, analysis_interval, error_rate_threshold, 
+                response_time_threshold, process_existing_logs is not None]):
+            config = LogManticsAI_config.load_yaml_config('config') or {}
+            
+            # Ensure anomaly_detection section exists
+            if 'anomaly_detection' not in config:
+                config['anomaly_detection'] = {}
+            
+            if batch_size is not None:
+                config['anomaly_detection']['batch_size'] = batch_size
+                click.echo(f"Batch size updated to {batch_size} logs per batch")
+            
+            if analysis_interval is not None:
+                config['anomaly_detection']['analysis_interval_sec'] = analysis_interval
+                click.echo(f"Analysis interval updated to {analysis_interval} seconds")
+            
+            if error_rate_threshold is not None:
+                config['anomaly_detection']['error_rate'] = error_rate_threshold
+                click.echo(f"Error rate threshold updated to {error_rate_threshold} errors/minute")
+            
+            if response_time_threshold is not None:
+                config['anomaly_detection']['response_time_ms'] = response_time_threshold
+                click.echo(f"Response time threshold updated to {response_time_threshold} ms")
+            
+            if process_existing_logs is not None:
+                config['anomaly_detection']['process_existing_logs'] = process_existing_logs
+                status = "enabled" if process_existing_logs else "disabled"
+                click.echo(f"Processing existing logs on startup {status}")
             
             save_yaml_config('config', config)
             return

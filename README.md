@@ -125,22 +125,84 @@ LogManticsAI slack-test
 
 ### 4. Anomaly Detection Configuration
 
-Configure anomaly detection settings:
+Configure anomaly detection settings with the following commands:
 ```bash
-# Set batch size for log analysis
+# Set batch size for log analysis (how many logs to analyze in each batch)
 LogManticsAI-config --batch-size 50
 
-# Set analysis interval in seconds
+# Set analysis interval in seconds (how often logs are analyzed)
 LogManticsAI-config --analysis-interval 120
 
-# Configure error rate threshold
+# Configure error rate threshold (errors/minute before alerting)
 LogManticsAI-config --error-rate-threshold 5
 
-# Configure response time threshold (ms)
+# Configure response time threshold in milliseconds
 LogManticsAI-config --response-time-threshold 1000
 
 # Enable/disable processing of existing logs on startup
 LogManticsAI-config --process-existing-logs true
+```
+
+You can verify your current settings with:
+```bash
+LogManticsAI-config --show
+```
+
+#### Batch Size
+The `--batch-size` option controls how many log entries are analyzed together in a single batch by the LLM:
+
+- **Lower values** (e.g., 10-30): Provide more frequent, granular analysis but may increase API costs and reduce context for pattern recognition.
+- **Higher values** (e.g., 100-200): Allow the LLM to see more logs at once, improving pattern detection across entries, but result in less frequent updates.
+- **Default**: 100 log entries per batch
+
+Example: Setting batch size to 50 means the LLM will analyze logs in groups of up to 50 entries:
+```bash
+LogManticsAI-config --batch-size 50
+```
+
+#### Analysis Interval
+The `--analysis-interval` option sets how frequently (in seconds) log batches are sent to the LLM for analysis:
+
+- **Lower values** (e.g., 30-60): More frequent analysis and faster alerts, but higher API usage and costs.
+- **Higher values** (e.g., 300-600): Less frequent analysis with lower costs, but longer delay before detecting issues.
+- **Default**: 300 seconds (5 minutes)
+
+Example: Setting interval to 120 seconds means logs will be analyzed at least every 2 minutes:
+```bash
+LogManticsAI-config --analysis-interval 120
+```
+
+#### How Batch Size and Analysis Interval Work Together
+
+The system analyzes logs when either condition is met:
+
+1. **Batch Size Reached First**: If your logs reach the batch size limit before the analysis interval expires, analysis happens immediately without waiting for the interval.
+
+2. **Analysis Interval Reached First**: If the analysis interval time is reached before collecting a full batch, the system analyzes whatever logs are available, even if the batch is partially filled.
+
+This approach ensures:
+- During high traffic periods: Frequent analysis as batches fill quickly
+- During low traffic periods: Timely analysis even when log volume is low
+
+Choosing the right balance depends on your application's log volume and how quickly you need to detect issues:
+```bash
+# High volume, cost-conscious configuration
+LogManticsAI-config --batch-size 200 --analysis-interval 600
+
+# Low volume, quick detection configuration
+LogManticsAI-config --batch-size 20 --analysis-interval 60
+```
+
+#### Response Time Threshold
+The `--response-time-threshold` option defines the maximum acceptable response time in milliseconds. Log entries with longer response times will be flagged as potential performance issues:
+
+- **Lower values** (e.g., 200-500ms): Stricter performance requirements for low-latency applications.
+- **Higher values** (e.g., 2000-5000ms): More lenient for applications where longer response times are acceptable.
+- **Default**: 1000ms (1 second)
+
+Example: Setting threshold to 1000ms means responses taking longer than 1 second will be highlighted:
+```bash
+LogManticsAI-config --response-time-threshold 1000
 ```
 
 ### 4.1 Error Rate Threshold Explained
